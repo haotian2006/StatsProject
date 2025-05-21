@@ -1,5 +1,5 @@
 CONFIGURATION
-Included Quizzes: True
+Included Quizzes: False
 Included Excused Absences: True
 Only Quizzes: False
 --------------------
