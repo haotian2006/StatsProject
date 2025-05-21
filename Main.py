@@ -16,8 +16,8 @@ A: Absent Excused
 U: Absent Unexcused
 ?: Absent Unknown
 """
-INCLUDE_EXCUSED_ABSENT = False # Should excused absences be included in the calculation of the probability of absence? (Only JAVA)
-INCLUDE_QUIZZES= True # Should quizzes be included in the calculation of the probability of absence?
+INCLUDE_EXCUSED_ABSENT = False # Should excused absences be included in the calculation of the probability of absence? 
+INCLUDE_QUIZZES= True # Should quizzes be included in the calculation of the probability of absence? (Only JAVA)
 QUIZ_ONLY = False # Should only quizzes be included in the calculation of the probability of absence? (Only JAVA)
 
 Tests = {} 
