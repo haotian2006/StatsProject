@@ -1,1 +1,0 @@
-key != 'H' and key != 'T'
