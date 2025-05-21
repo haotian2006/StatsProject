@@ -9,7 +9,7 @@ P-Value: 0.11496398432529409
 Z-Score: 1.2005444285299196
 p_Test: 0.005050505050505051
 p_Normal: 0.0025066844919786097
-Test Ratio: 3:594
+Test Ratio: 3:594 ⚠️ Large counts 
 Normal Ratio: 45:17952
 Total Students: 66
 ----PERIOD STATS-----
