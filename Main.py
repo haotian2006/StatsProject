@@ -17,7 +17,7 @@ U: Absent Unexcused
 ?: Absent Unknown
 """
 INCLUDE_EXCUSED_ABSENT = False # Should excused absences be included in the calculation of the probability of absence?
-INCLUDE_QUIZZES= False # Should quizzes be included in the calculation of the probability of absence?
+INCLUDE_QUIZZES= True # Should quizzes be included in the calculation of the probability of absence?
 QUIZ_ONLY = False # Should only quizzes be included in the calculation of the probability of absence?
 
 Tests = {} 
@@ -33,10 +33,10 @@ with open(TestDates, mode ='r')as file:
         elif line.find('|') != -1:
             date = line.split('|')
             test[date[1].strip()] = date[0].strip()
-
+ 
 
 def isAbsent(key):
-    return key != 'H' and key != 'T' or (INCLUDE_EXCUSED_ABSENT and key == 'A')
+    return  (INCLUDE_EXCUSED_ABSENT and key == 'A') or key == 'U' or key == '?' 
 
 def calculatePooled(x1,n1,x2,n2):
     return (x1 + x2) / (n1 + n2)
