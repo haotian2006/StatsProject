@@ -1,10 +1,11 @@
 CONFIGURATION
+Included Excused Only: False
 Included Quizzes: True
 Included Excused Absences: True
 Only Quizzes: False
 --------------------
 Attendance for JAVAPROG
-Total Students: 98
+Total Students: 98 
 P-Value: 0.0006200584719331381
 Z-Score: 3.229488902026262
 p_Test: 0.017346938775510204

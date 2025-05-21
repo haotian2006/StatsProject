@@ -16,7 +16,8 @@ A: Absent Excused
 U: Absent Unexcused
 ?: Absent Unknown
 """
-INCLUDE_EXCUSED_ABSENT = False # Should excused absences be included in the calculation of the probability of absence? 
+EXCUSED_ONLY = False # Should only excused absences be included in the calculation of the probability of absence?
+INCLUDE_EXCUSED_ABSENT = True # Should excused absences be included in the calculation of the probability of absence? 
 INCLUDE_QUIZZES= True # Should quizzes be included in the calculation of the probability of absence? (Only JAVA)
 QUIZ_ONLY = False # Should only quizzes be included in the calculation of the probability of absence? (Only JAVA)
 
@@ -36,6 +37,8 @@ with open(TestDates, mode ='r')as file:
  
 
 def isAbsent(key):
+    if EXCUSED_ONLY:
+        return key == 'A'
     return  (INCLUDE_EXCUSED_ABSENT and key == 'A') or key == 'U' or key == '?' 
 
 def calculatePooled(x1,n1,x2,n2):
@@ -261,6 +264,7 @@ def parse(path):
                 classes.addStudent(v[0], data)
         return classes
 print("CONFIGURATION")
+print("Included Excused Only:", EXCUSED_ONLY)
 print("Included Quizzes:", INCLUDE_QUIZZES)
 print("Included Excused Absences:", INCLUDE_EXCUSED_ABSENT)
 print("Only Quizzes:", QUIZ_ONLY)
