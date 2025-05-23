@@ -285,5 +285,5 @@ print("--------------------")
 JavaData = parse(JAVAPROG_CSV)
 APCSAData = parse(APCSA_CSV)
 #APCSAData.printStats()
-JavaData.printChartStats()
+JavaData.printStats()
 
