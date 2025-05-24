@@ -18,14 +18,15 @@ U: Absent Unexcused
 ?: Absent Unknown
 """
 EXCUSED_ONLY = False # Should only excused absences be included in the calculation of the probability of absence?
-INCLUDE_EXCUSED_ABSENT = False # Should excused absences be included in the calculation of the probability of absence? 
+INCLUDE_EXCUSED_ABSENT = True # Should excused absences be included in the calculation of the probability of absence? 
 INCLUDE_QUIZZES= True # Should quizzes be included in the calculation of the probability of absence? (Only JAVA)
 QUIZ_ONLY = False # Should only quizzes be included in the calculation of the probability of absence? (Only JAVA)
 
 Tests = {} 
 DaysOff = set()
 DATE_TO_INDEX = None
-DAYS_TO_SKIP = {
+
+DAYS_TO_INCLUDE = {
     "APCSA": [0,2,4], # Monday, Wednesday, Friday
     "JAVAPROG": [0,1,3], # Monday, Tuesday, Thursday
 }
@@ -54,13 +55,13 @@ with open(DAYS_OFF, mode ='r')as file:
 def getDay(date_str):
     date = datetime.datetime.strptime(date_str, '%m/%d/%y')
     return date.weekday()
-def removeDates(dates,daysToSkip):
+def removeDates(dates,daysToInclude):
     parsedDates = []
     for date_str in dates:
         if date_str in DaysOff:
             continue
         day = getDay(date_str)
-        if not (day in daysToSkip):
+        if not (day in daysToInclude):
             continue
         parsedDates.append(date_str)
     return parsedDates
@@ -78,11 +79,11 @@ class attendance:
         return self.size
     def __init__(self):
         self.attendance = {
-            'H': 0,
-            'T': 0,
-            'A': 0,
-            'U': 0,
-            '?': 0,
+            'H': 0, # Present
+            'T': 0, # Tardy
+            'A': 0, # Absent Excused
+            'U': 0, # Absent Unexcused
+            '?': 0, # Absent Unknown
         }
         self.size = 0
     def add(self, key):
@@ -99,6 +100,9 @@ class attendance:
             if isAbsent(key):
                 total += value
         return total
+    def getProbOfAbs(self):
+        total = self.getTotalAbsent()
+        return total / self.size 
     def getTardy(self):
         return self.attendance['T']
         
@@ -109,9 +113,6 @@ class attendance:
                 self.attendance[key] += value
             else:
                 raise ValueError(f"Invalid attendance code {key}.")
-    def getProbOfAbs(self):
-        total = self.getTotalAbsent()
-        return total / self.size 
     def getData(self) -> dict[str, int]:
         return self.attendance
 class period:
@@ -289,7 +290,7 @@ def parse(path):
                 if DATE_TO_INDEX is None:
     
                     DATE_TO_INDEX = {date: i for i, date in enumerate(v[2:])}
-                dates = removeDates(v[2:],DAYS_TO_SKIP[name])
+                dates = removeDates(v[2:],DAYS_TO_INCLUDE[name])
                 classes.addDates(dates)
             elif re.match(r'\d\)',v[0]):
                 classData = period(v[0][:1], dates,Tests[name])
@@ -308,6 +309,6 @@ print("--------------------")
 JavaData = parse(JAVAPROG_CSV)
 APCSAData = parse(APCSA_CSV)
 
-#APCSAData.printStats()
-JavaData.printStats()
+APCSAData.printStats()
+JavaData.printChartStats()
 
