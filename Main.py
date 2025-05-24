@@ -201,6 +201,18 @@ class period:
             totalAbsent = attendanceOnDate.getTotalAbsent()
             numAbsentOnTest[date] = [self.testDates[date],totalAbsent/attendanceOnDate.size,totalAbsent,attendanceOnDate.size]
         return numAbsentOnTest
+    def printChartStats(self):
+        col = ''
+        row = ''
+        for date in self.dates:
+            attendanceOnDate = self.getAttendanceOnDates([date])
+            name = date in self.testDates and f'{date}({self.testDates[date]})' or date
+            col += name + '\n'
+            row += f'{attendanceOnDate.getTotalAbsent()}\n'
+        with open('chartCOL.txt', 'w') as f:
+            f.write(col)
+        with open('chartROW.txt', 'w') as f:
+            f.write(row)
                
 class subject(period):
     def __init__(self, name,testDates):
@@ -271,7 +283,8 @@ class subject(period):
         strBuilder.append("--------------------------------------------------------------------------------------\n\n")
         built = '\n'.join(strBuilder)
         print(built)
-    
+
+ 
 def parse(path):
     with open(path, mode ='r')as file:
         csvFile = csv.reader(file)
@@ -303,5 +316,4 @@ print("--------------------")
 APCSAData = parse(APCSA_CSV)
 # #APCSAData.printStats()
 # JavaData.printStats()
-
 
