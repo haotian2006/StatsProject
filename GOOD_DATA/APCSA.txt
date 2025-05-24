@@ -1,0 +1,68 @@
+CONFIGURATION
+Included Excused Only: False
+Included Quizzes: True
+Included Excused Absences: False
+Only Quizzes: False
+--------------------
+Attendance for APCSA
+Total Students: 66
+P-Value: 0.7107669081735388
+Z-Score: -0.555626541086637
+p_Test: 0.005050505050505051
+p_Normal: 0.007017543859649123
+Test Ratio: 3:594 ⚠️ Large counts 
+Normal Ratio: 44:6270
+Total Students: 66
+----PERIOD STATS-----
+  Period    P-Value    Z-Score      p_Test    p_Normal  Test Ratio    Normal Ratio      Total Students
+--------  ---------  ---------  ----------  ----------  ------------  --------------  ----------------
+       5   0.669363  -0.438154  0.00694444  0.00953947  2:288         29:3040                       32
+       6   0.634114  -0.342769  0.00326797  0.00464396  1:306         15:3230                       34
+----TEST ATTENDANCE STATS-----
+Date              Date       Total Absent    P5 Total Absent    P6 Total Absent
+----------------  -------  --------------  -----------------  -----------------
+Test 1            9/27/24               0                  0                  0
+Test 2            11/8/24               1                  0                  1
+Test 3            12/4/24               0                  0                  0
+Test: List        1/29/25               0                  0                  0
+Test: BST         2/14/25               1                  1                  0
+Test: Heap        3/21/25               0                  0                  0
+Test: Collection  4/2/25                0                  0                  0
+Test: FRQ         4/23/25               1                  1                  0
+Test: MC          4/25/25               0                  0                  0
+----Days With Absent Students-----
+Date                  Total Absent
+------------------  --------------
+9/23/24                          1
+11/1/24                          1
+11/6/24                          1
+11/8/24(Test 2)                  1
+11/15/24                         2
+12/2/24                          2
+12/6/24                          2
+12/9/24                          1
+12/11/24                         1
+1/8/25                           1
+1/17/25                          1
+1/24/25                          1
+2/7/25                           1
+2/12/25                          1
+2/14/25(Test: BST)               1
+3/14/25                          2
+3/19/25                          4
+3/24/25                          1
+3/28/25                          1
+4/4/25                           1
+4/7/25                           1
+4/9/25                           1
+4/11/25                          1
+4/21/25                          1
+4/23/25(Test: FRQ)               1
+4/28/25                          1
+5/2/25                           1
+5/7/25                           3
+5/9/25                           2
+5/12/25                          2
+5/14/25                          2
+5/16/25                          4
+--------------------------------------------------------------------------------------

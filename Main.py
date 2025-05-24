@@ -24,9 +24,10 @@ QUIZ_ONLY = False # Should only quizzes be included in the calculation of the pr
 
 Tests = {} 
 DaysOff = set()
+DATE_TO_INDEX = None
 DAYS_TO_SKIP = {
-    "APCSA": [0,2,4],
-    "JAVAPROG": [0,1,3],
+    "APCSA": [0,2,4], # Monday, Wednesday, Friday
+    "JAVAPROG": [0,1,3], # Monday, Tuesday, Thursday
 }
 with open(TEST_DATES, mode ='r')as file:
     test = {}
@@ -113,7 +114,6 @@ class attendance:
         return total / self.size 
     def getData(self) -> dict[str, int]:
         return self.attendance
-
 class period:
     def __len__(self):
         return self.size
@@ -121,7 +121,6 @@ class period:
         self.testDates = testDates
         self.name = name
         self.dates = dates
-        self.dateToIndex = {date: i for i, date in enumerate(dates) }
         self.students = {}
         self.size = 0
     def addStudent(self, studentID,attendance):
@@ -130,11 +129,11 @@ class period:
     def getAttendanceOnDates(self, dates:list[str])-> attendance:
         data = attendance()
         for date in dates:
-            if not date in self.dateToIndex:
+            if not date in DATE_TO_INDEX:
                 raise ValueError(f"Date {date} not found in attendance records.")
-            id = self.dateToIndex[date]
+            id = DATE_TO_INDEX[date]
             for _, value in self.students.items():
-                key =  value[id]
+                key =  value[id] 
                 data.add(key)
         return data
             
@@ -153,9 +152,10 @@ class period:
         return quizDates
     def getAttendance(self,exclude = [])-> attendance:
         data = attendance()
-        for i,date in enumerate(self.dates):
+        for date in self.dates:
             if date in exclude:
                 continue
+            i = DATE_TO_INDEX[date]
             for _, val in self.students.items():
                 key =  val[i]
                 data.add(key)
@@ -193,14 +193,7 @@ class period:
             'test_attendance': testDays,
             'dates': testDates,
         } if getFullStats else p
-    def getAbsentOnTests(self):
-        dates = self.getTestDates(INCLUDE_QUIZZES) if not QUIZ_ONLY else self.getQuizDates()
-        numAbsentOnTest = {}
-        for date in dates:
-            attendanceOnDate = self.getAttendanceOnDates([date])
-            totalAbsent = attendanceOnDate.getTotalAbsent()
-            numAbsentOnTest[date] = [self.testDates[date],totalAbsent/attendanceOnDate.size,totalAbsent,attendanceOnDate.size]
-        return numAbsentOnTest
+
     def printChartStats(self):
         col = ''
         row = ''
@@ -220,7 +213,6 @@ class subject(period):
         self.periods = []
     def addDates(self, dates):
         self.dates = dates
-        self.dateToIndex = {date: i for i, date in enumerate(dates) }
     def addPeriod(self, period):
         self.periods.append(period)
     def getPeriods(self)-> list[period]:
@@ -286,25 +278,26 @@ class subject(period):
 
  
 def parse(path):
+    global DATE_TO_INDEX
     with open(path, mode ='r')as file:
         csvFile = csv.reader(file)
         name = path[:-4]
         classes = subject(name, Tests[name])
         dates = []
-        print(name)
         for i,v in enumerate(csvFile):
             if i == 0:
+                if DATE_TO_INDEX is None:
+    
+                    DATE_TO_INDEX = {date: i for i, date in enumerate(v[2:])}
                 dates = removeDates(v[2:],DAYS_TO_SKIP[name])
                 classes.addDates(dates)
             elif re.match(r'\d\)',v[0]):
-                print(v[0][:1])
                 classData = period(v[0][:1], dates,Tests[name])
                 classes.addPeriod(classData)
             elif re.match(r'\d+',v[0]):
                 data = v[2:]
                 classData.addStudent(v[0], data)
                 classes.addStudent(v[0], data)
-        print(dates)
         return classes
 print("CONFIGURATION")
 print("Included Excused Only:", EXCUSED_ONLY)
@@ -312,8 +305,9 @@ print("Included Quizzes:", INCLUDE_QUIZZES)
 print("Included Excused Absences:", INCLUDE_EXCUSED_ABSENT)
 print("Only Quizzes:", QUIZ_ONLY)
 print("--------------------")
-#JavaData = parse(JAVAPROG_CSV)
+JavaData = parse(JAVAPROG_CSV)
 APCSAData = parse(APCSA_CSV)
-# #APCSAData.printStats()
-# JavaData.printStats()
+
+#APCSAData.printStats()
+JavaData.printStats()
 
