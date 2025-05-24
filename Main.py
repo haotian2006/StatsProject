@@ -2,13 +2,14 @@ import csv
 import re
 from scipy.stats import norm
 import tabulate
+import datetime
 
 
 
 APCSA_CSV = 'APCSA.csv'
 JAVAPROG_CSV = 'JAVAPROG.csv'
-TestDates = 'TestDates.txt'
-
+TEST_DATES = 'TestDates.txt'
+DAYS_OFF = 'DaysOff.txt'
 """
 H: Present
 T: Tardy
@@ -17,12 +18,17 @@ U: Absent Unexcused
 ?: Absent Unknown
 """
 EXCUSED_ONLY = False # Should only excused absences be included in the calculation of the probability of absence?
-INCLUDE_EXCUSED_ABSENT = True # Should excused absences be included in the calculation of the probability of absence? 
+INCLUDE_EXCUSED_ABSENT = False # Should excused absences be included in the calculation of the probability of absence? 
 INCLUDE_QUIZZES= True # Should quizzes be included in the calculation of the probability of absence? (Only JAVA)
 QUIZ_ONLY = False # Should only quizzes be included in the calculation of the probability of absence? (Only JAVA)
 
 Tests = {} 
-with open(TestDates, mode ='r')as file:
+DaysOff = set()
+DAYS_TO_SKIP = {
+    "APCSA": [0,2,4],
+    "JAVAPROG": [0,1,3],
+}
+with open(TEST_DATES, mode ='r')as file:
     test = {}
     for line in file:
         line = line.strip()
@@ -34,8 +40,29 @@ with open(TestDates, mode ='r')as file:
         elif line.find('|') != -1:
             date = line.split('|')
             test[date[1].strip()] = date[0].strip()
- 
+with open(DAYS_OFF, mode ='r')as file:
+    for line in file:
+        line = line.strip()
+        start = datetime.datetime.strptime(line[:8], '%m/%d/%y')
+        end = datetime.datetime.strptime(line[9:17], '%m/%d/%y')
+        while start <= end:
+            month, day, year = start.strftime('%m/%d/%y').split('/')
+            DaysOff.add(f"{int(month)}/{int(day)}/{year}")
+            start += datetime.timedelta(days=1)
 
+def getDay(date_str):
+    date = datetime.datetime.strptime(date_str, '%m/%d/%y')
+    return date.weekday()
+def removeDates(dates,daysToSkip):
+    parsedDates = []
+    for date_str in dates:
+        if date_str in DaysOff:
+            continue
+        day = getDay(date_str)
+        if not (day in daysToSkip):
+            continue
+        parsedDates.append(date_str)
+    return parsedDates
 def isAbsent(key):
     if EXCUSED_ONLY:
         return key == 'A'
@@ -251,17 +278,20 @@ def parse(path):
         name = path[:-4]
         classes = subject(name, Tests[name])
         dates = []
+        print(name)
         for i,v in enumerate(csvFile):
             if i == 0:
-                dates = v[2:]
+                dates = removeDates(v[2:],DAYS_TO_SKIP[name])
                 classes.addDates(dates)
             elif re.match(r'\d\)',v[0]):
+                print(v[0][:1])
                 classData = period(v[0][:1], dates,Tests[name])
                 classes.addPeriod(classData)
             elif re.match(r'\d+',v[0]):
                 data = v[2:]
                 classData.addStudent(v[0], data)
                 classes.addStudent(v[0], data)
+        print(dates)
         return classes
 print("CONFIGURATION")
 print("Included Excused Only:", EXCUSED_ONLY)
@@ -269,9 +299,9 @@ print("Included Quizzes:", INCLUDE_QUIZZES)
 print("Included Excused Absences:", INCLUDE_EXCUSED_ABSENT)
 print("Only Quizzes:", QUIZ_ONLY)
 print("--------------------")
-JavaData = parse(JAVAPROG_CSV)
+#JavaData = parse(JAVAPROG_CSV)
 APCSAData = parse(APCSA_CSV)
-#APCSAData.printStats()
-JavaData.printStats()
+# #APCSAData.printStats()
+# JavaData.printStats()
 
 
