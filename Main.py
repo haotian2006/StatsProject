@@ -85,8 +85,12 @@ class attendance:
             'U': 0, # Absent Unexcused
             '?': 0, # Absent Unknown
         }
+        self.frequency = {}
         self.size = 0
-    def add(self, key):
+    def add(self, key,id):
+        isAb = isAbsent(key)
+        if isAb:
+            self.frequency[id] = self.frequency.get(id, 0) + 1
         if key == '':
             key = 'H'
         if key in self.attendance:
@@ -100,19 +104,19 @@ class attendance:
             if isAbsent(key):
                 total += value
         return total
+    def getFrequencyTable(self):
+        t = {}
+        for key, value in self.frequency.items():
+            t[value] = t.get(value, 0) + 1
+        return sorted(t.items(), key=lambda x: x[0], reverse=True)
     def getProbOfAbs(self):
         total = self.getTotalAbsent()
         return total / self.size 
     def getTardy(self):
         return self.attendance['T']
-        
-    def combine(self, other):
-        self.size += len(other)
-        for key, value in other.attendance.items():
-            if key in self.attendance:
-                self.attendance[key] += value
-            else:
-                raise ValueError(f"Invalid attendance code {key}.")
+    def getTop10Absent(self):
+        sorted_absences = sorted(self.frequency.items(), key=lambda x: x[1], reverse=True)
+        return sorted_absences[:10]
     def getData(self) -> dict[str, int]:
         return self.attendance
 class period:
@@ -127,15 +131,16 @@ class period:
     def addStudent(self, studentID,attendance):
         self.size += 1
         self.students[studentID] = attendance
+        
     def getAttendanceOnDates(self, dates:list[str])-> attendance:
         data = attendance()
         for date in dates:
             if not date in DATE_TO_INDEX:
                 raise ValueError(f"Date {date} not found in attendance records.")
             id = DATE_TO_INDEX[date]
-            for _, value in self.students.items():
+            for stuId, value in self.students.items():
                 key =  value[id] 
-                data.add(key)
+                data.add(key,stuId)
         return data
             
     def getTestDates(self,includeQuiz = False,includeOptional = False)-> list[str]:
@@ -157,9 +162,9 @@ class period:
             if date in exclude:
                 continue
             i = DATE_TO_INDEX[date]
-            for _, val in self.students.items():
+            for id, val in self.students.items():
                 key =  val[i]
-                data.add(key)
+                data.add(key,id)
         return data
     def getStudents(self)-> dict[str, list[str]]:
         return self.students
@@ -309,6 +314,6 @@ print("--------------------")
 JavaData = parse(JAVAPROG_CSV)
 APCSAData = parse(APCSA_CSV)
 
-APCSAData.printStats()
-JavaData.printChartStats()
-
+#APCSAData.printStats()
+print(JavaData.getAttendance(JavaData.getTestDates(True)).getFrequencyTable())
+print(JavaData.getAttendanceOnDates(JavaData.getTestDates(True)).getFrequencyTable())
